@@ -1,29 +1,43 @@
+const refs = {
+imageForm: document.querySelector('.form'),
+imageInput: document.querySelector('.input'),
+submitButton: document.querySelector('.btn'),
+imageList: document.querySelector('.images-list'),
+}
 
-// import { renderPhotoList, showQueryError } from './render-functions';
+export function getImages(request) {
+const BASE_URL = 'https://pixabay.com';
+const END_POINT = '/api/';
+const PARAMS = new URLSearchParams({
+        key: '44332544-4246296cfd54d81c9e369dca1',
+        q:  request,
+        image_type: 'photo',
+        orientation: 'horizontal',
+        safesearch: true,
+        page: 1,
+        per_page: 30,
+    });
 
-// export function pixabayRequest(searchParams, container) {
-//   fetch(`https://pixabay.com/api/?${searchParams}`)
-//     .then(response => {
-//       if (!response.ok) {
-//         throw new Error(response.status);
-//       }
-//       return response.json();
-//     })
-//     .then(photos => renderPhotoList(photos, container))
-//     .catch(error => showQueryError(error));
-// }
+const url = `${BASE_URL}${END_POINT}?${PARAMS}`;
+console.log(url);
 
-const API_KEY = '44332544-4246296cfd54d81c9e369dca1'; // Замініть 'YOUR_API_KEY' на свій ключ доступу
+const options = {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Content - Type': 'application/json',
 
-export async function fetchImages(keyword) {
-    const url = `https://pixabay.com/api/?key=${API_KEY}&q=${encodeURIComponent(keyword)}&image_type=photo&orientation=horizontal&safesearch=true`;
+            'X-RateLimit-Limit': '100',
+            'X-RateLimit-Remaining': '99',
+            'X-RateLimit-Reset': '0.6',
+    },
+}
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        return data.hits;
-    } catch (error) {
-        console.error('Error fetching images:', error);
-        return [];
-    }
+return fetch(url)
+.then(res => {
+if (res.ok) {
+return res.json();
+} else {
+throw new Error(res.status);
+}
+});
 }
