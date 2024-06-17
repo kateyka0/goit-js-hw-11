@@ -1,54 +1,72 @@
-// import { pixabayRequest } from './js/pixabay-api.js';
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
 
-// const fetchPhotoForm = document.querySelector('form');
-// const photoList = document.querySelector('.photo-list');
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 
-// let searchParams = new URLSearchParams({
-//   key: '44332544-4246296cfd54d81c9e369dca1',
-//   q: 'sport',
-//   lang: 'en',
-//   id: '',
-//   image_type: 'all',
-//   orientation: 'horizontal',
-// });
+import { renderImages } from "./js/render-functions";
+import { getImages } from "./js/pixabay-api";
 
-// fetchPhotoForm.addEventListener('submit', e => {
-//   console.log(e.target);
-//   e.preventDefault();
-//   pixabayRequest(searchParams, photoList);
-// });
+const refs = {
+    imageForm: document.querySelector('.form'),
+    imageInput: document.querySelector('.input'),
+    submitButton: document.querySelector('.btn'),
+    imageList: document.querySelector('.images-list'),
+    loader: document.querySelector('.loader'),
+}
 
-import iziToast from 'izitoast';
-import 'izitoast/dist/css/iziToast.min.css';
-import { fetchImages } from './js/pixabay-api.js';
-import { clearGallery, displayImages, showMessage } from './js/render-functions.js';
+refs.loader.style.display = 'none';
 
-document.addEventListener('DOMContentLoaded', function () {
-    const searchForm = document.querySelector('.search-form');
+let request;
 
-    searchForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
+refs.imageForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    request = e.target.elements.userData.value;
 
-        const keywordInput = document.querySelector('.keyword');
-        const keyword = keywordInput.value.trim();
+    if (request.trim() === '') {
+        refs.imageList.innerHTML = '';
+        return iziToast.info({
+            message: 'You need to enter search request!',
+            position: 'topRight',
+            transitionIn: 'bounceInDown',
+            transitionOut: 'fadeOutDown',
+        });
+    }
+const loader = document.querySelector('.loader')
+        refs.loader.style.display = 'block';
 
-        if (keyword === '') {
-            showMessage('Please enter a search keyword');
-            return;
-        }
-
-        clearGallery();
-
-        try {
-            const images = await fetchImages(keyword);
-            if (images.length === 0) {
-                showMessage('Sorry, there are no images matching your search query. Please try again!');
+    getImages(request)
+        .then(images => {
+            if (images.hits.length === 0) {
+                refs.imageList.innerHTML = '';
+                return iziToast.error({
+                    message: 'Sorry, there are no images matching your search query. Please try again!',
+                    position: 'topRight',
+                    transitionIn: 'bounceInDown',
+                    transitionOut: 'fadeOutDown',
+                });
             } else {
-                displayImages(images);
-            }
-        } catch (error) {
-            console.error('Error searching images:', error);
-            showMessage('An error occurred while searching for images. Please try again later.');
-        }
-    });
-});
+                renderImages(images);
+
+                const lightbox = new SimpleLightbox('.images-list-item a', {
+                        captions: true,
+                        captionSelector: 'img',
+                        captionType: 'attr',
+                        captionsData: 'alt',
+                        captionPosition: 'bottom',
+                        captionDelay: 250,
+                        animationSpeed: 300,
+                        widthRatio: 1,
+                        heightRatio: 0.95,
+                        disableRightClick: true,
+                    });
+                    lightbox.refresh();
+}            
+        })
+        .then(() => refs.loader.style.display = 'none')
+        .catch(err => {
+            console.log(err);
+            refs.loader.style.display = 'none';
+        });
+    e.target.reset();
+})
