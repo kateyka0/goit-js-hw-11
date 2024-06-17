@@ -2,30 +2,32 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link type="image/svg+xml" href="/favicon.svg" rel="icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>goit-js-hw-11</title>
     
     <script type="module" crossorigin src="/goit-js-hw-11/commonHelpers.js"></script>
-    <link rel="modulepreload" crossorigin href="/goit-js-hw-11/assets/vendor-86291ea8.js">
-    <link rel="stylesheet" href="/goit-js-hw-11/assets/vendor-e5212ee8.css">
-    <link rel="stylesheet" href="/goit-js-hw-11/assets/index-0e26b7f9.css">
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-11/assets/vendor-8c59ed88.js">
+    <link rel="stylesheet" href="/goit-js-hw-11/assets/vendor-1cd1f9d9.css">
+    <link rel="stylesheet" href="/goit-js-hw-11/assets/index-1704aa3f.css">
   </head>
   <body>
-    <section>
-      <div class="container">
-        <form>
-          <input type="text" />
-          <button class="btn" type="submit">Search</button>
-        </form>
-      </div>
-    </section>
-    <section>
-      <div class="container">
-        <ul class="photo-list gallery"></ul>
-      </div>
-    </section>
+    <main>
+      <form class="form" action>
+        <input
+          class="input"
+          id="input"
+          name="userData"
+          type="search"
+          placeholder="Search images..."
+        />
+        <button class="btn" type="submit">Search</button>
+      </form>
 
+      <span class="loader"></span>
+
+      <ul class="images-list"></ul>
+    </main>
+    <footer></footer>
     
   </body>
 </html>
